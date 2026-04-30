@@ -1,22 +1,19 @@
 version: '3.8'
+
 services:
   redis:
     image: redis:latest
+    container_name: hand-redis
     ports:
       - "6379:6379"
 
   tracking-service:
     build: .
-    command: python tracking_service.py
+    container_name: hand-tracking-svc
+    ports:
+      - "50051:50051"
     environment:
       - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - redis
-
-  detection-service:
-    build: .
-    command: python detection_service.py
-    environment:
-      - TRACKING_SVC_ADDR=tracking-service:50051
-    depends_on:
-      - tracking-service
