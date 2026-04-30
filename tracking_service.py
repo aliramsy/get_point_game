@@ -4,9 +4,12 @@ import hand_pos_pb2
 import hand_pos_pb2_grpc
 import redis
 import os
+from dotenv import load_dotenv
 
-REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+load_dotenv()
+
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = int(os.getenv("REDIS_PORT"))
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
 class HandTrackerServicer(hand_pos_pb2_grpc.HandTrackerServicer):
@@ -15,13 +18,12 @@ class HandTrackerServicer(hand_pos_pb2_grpc.HandTrackerServicer):
         self.prev_y = 0.5
 
     def SendPosition(self, request, context):
-        # 1. Heartbeat check - See if data is arriving at all
+
         print(f"Received coords: x={request.x:.2f}, y={request.y:.2f}")
 
         dx = request.x - self.prev_x
         dy = request.y - self.prev_y
         
-        # 2. Lower the threshold for testing (from 0.03 to 0.01)
         threshold = 0.01
         direction = None
 
