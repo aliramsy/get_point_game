@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+service HandTracker {
+  rpc SendPosition (Position) returns (Empty) {}
+}
+
+message Position {
+  float x = 1;
+  float y = 2;
+}
+
+message Empty {}

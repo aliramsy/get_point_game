@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  tracking-service:
+    build: .
+    command: python tracking_service.py
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+
+  detection-service:
+    build: .
+    command: python detection_service.py
+    environment:
+      - TRACKING_SVC_ADDR=tracking-service:50051
+    depends_on:
+      - tracking-service
